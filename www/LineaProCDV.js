@@ -37,14 +37,19 @@ LineaProCDV.prototype.connectionChanged = function(state) {
 };
                
 LineaProCDV.prototype.onMagneticCardData = function(track1, track2, track3) {
-    this.cardDataCallback(track1 + track2 + track3);
+    var data = {
+        track1: track1,
+        track2: track2,
+        track3: track3
+    };
+    this.cardDataCallback(data);
     this.barcodeStart();
 };
 
 LineaProCDV.prototype.onBarcodeData = function(rawCodesArr, scanId, dob, state, city, expires, gender, height, weight, hair, eye, firstName, lastName) {
     var data = {
                rawCodesArr: rawCodesArr,
-               scanId: scanId,
+               id: scanId,
                dob: dob,
                state: state,
                city: city,
@@ -55,7 +60,9 @@ LineaProCDV.prototype.onBarcodeData = function(rawCodesArr, scanId, dob, state, 
                hair: hair,
                eye: eye,
                firstName: firstName,
-               lastName: lastName
+               lastName: lastName,
+               address: address,
+               zip: zip
                };
     this.barcodeCallback(data);
 };

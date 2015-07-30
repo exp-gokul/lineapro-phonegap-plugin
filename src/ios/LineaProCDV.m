@@ -28,7 +28,7 @@
     int percent;
     float voltage;
     
-	if([dtdev getBatteryCapacity:&percent voltage:&voltage error:nil])
+    if([dtdev getBatteryCapacity:&percent voltage:&voltage error:nil])
     {
         NSString *status = [NSString stringWithFormat:@"Bat: %.2fv, %d%%",voltage,percent];
         
@@ -43,7 +43,7 @@
     
     NSString *jsStatement = [NSString stringWithFormat:@"onSuccessScanPaymentCard('%@');", num];
     [self.webView stringByEvaluatingJavaScriptFromString:jsStatement];
-	[self.viewController dismissViewControllerAnimated:YES completion:nil];
+    [self.viewController dismissViewControllerAnimated:YES completion:nil];
     
 }
 
@@ -84,15 +84,15 @@
     NSLog(@"connectionState: %d", state);
     
     switch (state) {
-		case CONN_DISCONNECTED:
-		case CONN_CONNECTING:
+        case CONN_DISCONNECTED:
+        case CONN_CONNECTING:
                 break;
-		case CONN_CONNECTED:
-		{
-			NSLog(@"PPad connected!\nSDK version: %d.%d\nHardware revision: %@\nFirmware revision: %@\nSerial number: %@", dtdev.sdkVersion/100,dtdev.sdkVersion%100,dtdev.hardwareRevision,dtdev.firmwareRevision,dtdev.serialNumber);
-			break;
-		}
-	}
+        case CONN_CONNECTED:
+        {
+            NSLog(@"PPad connected!\nSDK version: %d.%d\nHardware revision: %@\nFirmware revision: %@\nSerial number: %@", dtdev.sdkVersion/100,dtdev.sdkVersion%100,dtdev.hardwareRevision,dtdev.firmwareRevision,dtdev.serialNumber);
+            break;
+        }
+    }
     
     NSString* retStr = [ NSString stringWithFormat:@"LineaProCDV.connectionChanged(%d);", state];
     [[super webView] stringByEvaluatingJavaScriptFromString:retStr];
@@ -119,7 +119,7 @@
     NSDictionary *card = [dtdev msProcessFinancialCard:track1 track2:track2];
     if(card && [card objectForKey:@"accountNumber"]!=nil && [[card objectForKey:@"expirationYear"] intValue]!=0)
     {
-        NSLog(@"magneticCardData (full info): accountNumber - %@, cardholderName - %@, expirationYear - %@, expirationMonth - %@, serviceCode - %@, discretionaryData - %@, firstName - %@, lastName - %@", [card objectForKey:@"accountNumber"], [card objectForKey:@"cardholderName"], [card objectForKey:@"expirationYear"], [card objectForKey:@"expirationMonth"], [card objectForKey:@"serviceCode"], [card objectForKey:@"discretionaryData"], [card objectForKey:@"firstName"], [card objectForKey:@"lastName"]);
+            track1 = @"";track2 = @"" ;track3 = @"";
     }
     NSString* retStr = [ NSString stringWithFormat:@"LineaProCDV.onMagneticCardData('%@', '%@', '%@');", track1, track2, track3];
     [[super webView] stringByEvaluatingJavaScriptFromString:retStr];
@@ -238,11 +238,15 @@
     NSString* expires = [LineaProCDV getPDF417ValueByCode:codesArr code: substrExpires];
     NSString* substrLicense = @"DAQ";
     NSString* license = [LineaProCDV getPDF417ValueByCode:codesArr code: substrLicense];
+    NSString* substrAddress = @"DAG";
+    NSString* address = [LineaProCDV getPDF417ValueByCode:codesArr code: substrAddress];
+    NSString* substrZip = @"DAG";
+    NSString* zip = [LineaProCDV getPDF417ValueByCode:codesArr code: substrZip];
     NSLog(@"%@ %@ %@ %@ %@ %@ %@ %@ %@ %@ %@ %@", dateBirth, name, lastName, eye, state, city, height, weight, gender, hair, expires, license);
     
     NSString* rawCodesArrJSString = [LineaProCDV generateStringForArrayEvaluationInJS:codesArr];
     //LineaProCDV.onBarcodeData(scanId, dob, state, city, expires, gender, height, weight, hair, eye)
-    NSString* retStr = [ NSString stringWithFormat:@"var rawCodesArr = %@; LineaProCDV.onBarcodeData(rawCodesArr, '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@');", rawCodesArrJSString, license, dateBirth, state, city, expires, gender, height, weight, hair, eye, name, lastName];
+    NSString* retStr = [ NSString stringWithFormat:@"var rawCodesArr = %@; LineaProCDV.onBarcodeData(rawCodesArr, '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@');", rawCodesArrJSString, license, dateBirth, state, city, expires, gender, height, weight, hair, eye, name, lastName, address, zip];
     [[super webView] stringByEvaluatingJavaScriptFromString:retStr];
 }
 
