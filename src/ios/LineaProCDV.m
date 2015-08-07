@@ -194,7 +194,7 @@
         NSString *substring = [[currStr substringFromIndex:NSMaxRange(range)] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         return substring;
     }
-    return NULL;
+    return @"";
 }
 
 + (NSString*) generateStringForArrayEvaluationInJS: (NSArray*) stringsArray {
@@ -216,8 +216,11 @@
                         [NSCharacterSet characterSetWithCharactersInString:@"\n\r"]];
     NSString* substrDateBirth = @"DBB";
     NSString* dateBirth = [LineaProCDV getPDF417ValueByCode:codesArr code: substrDateBirth];
-    NSString* substrName = @"DAC";
+    NSString* substrName = @"DCT";
     NSString* name = [LineaProCDV getPDF417ValueByCode:codesArr code: substrName];
+    NSArray * nameArray = [name componentsSeparatedByString:@","];
+    NSString* firstName = nameArray[0];    
+    NSString* middleName = nameArray[1];    
     NSString* substrLastName = @"DCS";
     NSString* lastName = [LineaProCDV getPDF417ValueByCode:codesArr code: substrLastName];
     NSString* substrEye = @"DAY";
@@ -240,13 +243,17 @@
     NSString* license = [LineaProCDV getPDF417ValueByCode:codesArr code: substrLicense];
     NSString* substrAddress = @"DAG";
     NSString* address = [LineaProCDV getPDF417ValueByCode:codesArr code: substrAddress];
-    NSString* substrZip = @"DAG";
+    NSString* substrZip = @"DAJ";
     NSString* zip = [LineaProCDV getPDF417ValueByCode:codesArr code: substrZip];
-    NSLog(@"%@ %@ %@ %@ %@ %@ %@ %@ %@ %@ %@ %@", dateBirth, name, lastName, eye, state, city, height, weight, gender, hair, expires, license);
+    NSDate* currentDate = [NSDate date];
+    NSDateFormatter *dayFormatter = [[NSDateFormatter alloc] init];
+    [dayFormatter setDateFormat:@"yyyy/MM/dd hh:mm a"];   
+    NSString* visiting_time = [NSString stringWithFormat:@"%@",[dayFormatter stringFromDate:currentDate]];
+    NSLog(@"%@ %@ %@ %@ %@ %@ %@ %@ %@ %@ %@ %@", dateBirth, firstName, lastName, eye, state, city, height, weight, gender, hair, expires, license);
     
     NSString* rawCodesArrJSString = [LineaProCDV generateStringForArrayEvaluationInJS:codesArr];
     //LineaProCDV.onBarcodeData(scanId, dob, state, city, expires, gender, height, weight, hair, eye)
-    NSString* retStr = [ NSString stringWithFormat:@"var rawCodesArr = %@; LineaProCDV.onBarcodeData(rawCodesArr, '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@');", rawCodesArrJSString, license, dateBirth, state, city, expires, gender, height, weight, hair, eye, name, lastName, address, zip];
+    NSString* retStr = [ NSString stringWithFormat:@"var rawCodesArr = %@; LineaProCDV.onBarcodeData(rawCodesArr, '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@', '%@');", rawCodesArrJSString, license, dateBirth, state, city, expires, gender, height, weight, hair, eye, firstName, lastName, address, zip, middleName, visiting_time];
     [[super webView] stringByEvaluatingJavaScriptFromString:retStr];
 }
 

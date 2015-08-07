@@ -62,7 +62,9 @@ LineaProCDV.prototype.onBarcodeData = function(rawCodesArr, scanId, dob, state, 
                firstName: firstName,
                lastName: lastName,
                address: address,
-               zip: zip
+               zip: zip,
+               middleName: middleName,
+               visiting_time: visiting_time
                };
     this.barcodeCallback(data);
 };
